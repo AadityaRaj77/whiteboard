@@ -3,19 +3,62 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import { configDotenv } from 'dotenv';
 import { User } from './models/User.js'
+import bcrypt from 'bcrypt'
+import cookieParser from 'cookie-parser';
 
 configDotenv()
 
 const app = express()
-const PORT = 3000
+const PORT = 3001
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:5173',  // replace with your frontend origin
+    credentials: true
+}))
 app.use(express.json())
+app.use(cookieParser())
 
-// let conn = await mongoose.connect(process.env.DB_URI)
+async function connectToDB() {
+    try {
+        await mongoose.connect(process.env.DB_URI);
+        console.log("Mongoose connected");
+    } catch (err) {
+        console.error("Connection error:", err);
+    }
+}
 
-app.post('/login', (req, res) => {
-    res.send('hello')
+connectToDB();
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body
+    const existingUser = await User.findOne({ username })
+
+    if (existingUser) {
+        const isMatch = await bcrypt.compare(password, existingUser.password)
+        if (isMatch) {
+            res.cookie('user', username, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 72 * 60 * 60 * 1000 });
+            res.json({ success: true, type: 'login' })
+        } else {
+            res.json({ success: false, type: 'login' })
+        }
+    } else {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const newUser = new User({ username: username, password: hashedPassword })
+        await newUser.save()
+
+        res.cookie('user', username, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 72 * 60 * 60 * 1000 });
+        res.json({ success: true, type: 'register' })
+    }
+})
+
+app.get('/whiteboard', (req, res) => {
+    const user = req.cookies.user;
+    // console.log(req.)
+    if (!user) {
+        return res.json({ success: false })
+    } else {
+        res.json({ success: true, user })
+    }
 })
 
 app.listen(PORT, () => {

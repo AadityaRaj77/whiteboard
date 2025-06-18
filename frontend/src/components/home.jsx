@@ -4,19 +4,25 @@ import { useNavigate } from 'react-router'
 function Home() {
   const [loginForm, setLoginForm] = useState({})
   const navigate = useNavigate();
+  
 
   const handleForm = (e) => {
     setLoginForm({...loginForm, [e.target.name]: e.target.value })
   }
 
   const submitForm = async () => {
-    const promise = await fetch('http://localhost:3000/login/', {
+    const promise = await fetch('http://localhost:3001/login', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
     })
-    const res = await promise.text()
-    
+    const res = await promise.json()
+    if (res.success) {
+      navigate('/whiteboard')
+    } else {
+      //
+    }
   }
 
   return (
