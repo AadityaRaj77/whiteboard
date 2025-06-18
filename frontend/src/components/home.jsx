@@ -1,6 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router'
 
 function Home() {
+  const [loginForm, setLoginForm] = useState({})
+  const navigate = useNavigate();
+
+  const handleForm = (e) => {
+    setLoginForm({...loginForm, [e.target.name]: e.target.value })
+  }
+
+  const submitForm = async () => {
+    const promise = await fetch('http://localhost:3000/login/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginForm)
+    })
+    const res = await promise.text()
+    
+  }
+
   return (
     <>
     <div className='h-20 items-center flex'>
@@ -10,10 +28,12 @@ function Home() {
       <h1 className='text-center text-2xl mb-8'>Login/Register</h1>
       <div className='items-center'>
         <p className='mb-1'>Username</p>
-        <input type='text' className='border-2 border-blue-300 rounded-md p-2 w-1/1 focus:outline-none focus:border-blue-400 mb-4' name='username'/>
+        <input type='text' className='border-2 border-blue-300 rounded-md p-2 w-1/1 focus:outline-none focus:border-blue-400 mb-4' name='username' onChange={handleForm} value={loginForm.username ?? ''}/>
+
         <p className='mb-1'>Password</p>
-        <input type='text' className='border-2 border-blue-300 rounded-md p-2 w-1/1 focus:outline-none focus:border-blue-400' name='password'/>
-        <button className='block bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 justify-center items-center mt-8 mx-auto'>Submit</button>
+        <input type='text' className='border-2 border-blue-300 rounded-md p-2 w-1/1 focus:outline-none focus:border-blue-400' name='password' onChange={handleForm} value={loginForm.password ?? ''}/>
+
+        <button className='block bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 justify-center items-center mt-8 mx-auto' onClick={submitForm}>Submit</button>
         
       </div>
     </div>

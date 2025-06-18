@@ -1,5 +1,4 @@
-import React from 'react'
-import * as fabric from 'fabric'
+import React from 'react';
 
 function Whiteboard() {
   //const
