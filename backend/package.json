@@ -3,5 +3,17 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
-  }
+  },
+  "name": "backend",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

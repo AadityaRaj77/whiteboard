@@ -1,13 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import Home from './components/home'
+import Whiteboard from './components/Whiteboard'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home/>
+    },
+    {
+      path: "/whiteboard",
+      element: <Whiteboard/>
+    }
+  ])
   return (
     <>
-    <Home/>      
+    <RouterProvider router={router}>
+
+    </RouterProvider>
     </>
   )
 }
