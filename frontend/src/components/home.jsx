@@ -28,7 +28,7 @@ function Home() {
   return (
     <>
     <div className='h-20 items-center flex'>
-      <h1 className='text-3xl text-blue-400 font-medium'>Whiteboard</h1>
+      <h1 className='text-3xl text-blue-400 font-medium'>VectorSpace</h1>
     </div>
     <div className='relative items-center bg-white p-10 mt-25 ml-220 mr-50 rounded-2xl hover:shadow-md'>
       <h1 className='text-center text-2xl mb-8'>Login/Register</h1>
