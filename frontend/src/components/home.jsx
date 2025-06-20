@@ -27,10 +27,21 @@ function Home() {
 
   return (
     <>
-    <div className='h-20 items-center flex'>
-      <h1 className='text-3xl text-blue-400 font-medium'>VectorSpace</h1>
+    <div className='container h-20 content-center text-center'>
+      <h1 className='text-4xl text-blue-400 font-medium mt-15 '>Collaborative Whiteboard</h1>
     </div>
-    <div className='relative items-center bg-white p-10 mt-25 ml-220 mr-50 rounded-2xl hover:shadow-md'>
+    <div className="
+    mt-25
+    justify-self-center
+    w-1/3
+    p-8
+    rounded-lg
+    backdrop-blur-[20px]
+    bg-white/50
+    shadow-[0_1px_12px_rgba(0,0,0,0.25)]
+    border
+    border-white/30
+  ">
       <h1 className='text-center text-2xl mb-8'>Login/Register</h1>
       <div className='items-center'>
         <p className='mb-1'>Username</p>
@@ -43,11 +54,13 @@ function Home() {
         
       </div>
     </div>
-    <div>
-      <img src='https://img.freepik.com/premium-photo/poster-man-woman-front-whiteboard-with-graph_1288286-2337.jpg?uid=R204064089&ga=GA1.1.37188644.1740345148&semt=ais_hybrid&w=740' className='absolute top-40 ml-8'></img>
-    </div>
     </>
   )
 }
 
 export default Home
+
+
+
+
+/*container justify-self-center content-center bg-white w-1/3 p-8 mt-25 rounded-2xl hover:shadow-md*/
