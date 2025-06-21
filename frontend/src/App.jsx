@@ -1,4 +1,4 @@
-import './App.css'
+// import './App.css'
 import Home from './components/Home';
 import Whiteboard from './components/Whiteboard';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';

@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+
+.body {
+  background-image: url("https://images.pexels.com/photos/265152/pexels-photo-265152.jpeg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+@utility tool-btn {
+  @apply bg-blue-400 text-white p-3 rounded-full hover:bg-blue-500  mx-2
+}
