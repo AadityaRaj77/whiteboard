@@ -78,17 +78,16 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 
-    socket.on('draw-rect', (rect) => {
-        // Broadcast to all other sockets
-        socket.broadcast.emit('draw-rect', rect);
+    socket.on('updateRectangles', (data) => {
+        socket.broadcast.emit('updateRectangles', data);
     });
 
-    // Relay pencil/line draws
-    socket.on('draw-line', (line) => {
-        socket.broadcast.emit('draw-line', line);
+    socket.on('updateCircles', (data) => {
+        socket.broadcast.emit('updateCircles', data);
     });
-    socket.on('update-rect', (rects) => {
-        socket.broadcast.emit('update-rect', rects);
+
+    socket.on('updateLines', (data) => {
+        socket.broadcast.emit('updateLines', data);
     });
 });
 

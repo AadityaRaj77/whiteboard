@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
-import { Stage, Layer, Rect, Line } from "react-konva";
+import { Stage, Layer, Rect, Circle, Line } from "react-konva";
 
 import { io } from "socket.io-client";
 
@@ -10,90 +10,107 @@ const socket = io("http://localhost:3001");
 
 function Whiteboard() {
   const [tool, setTool] = useState("pencil");
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [newRect, setNewRect] = useState(null);
   const [rectangles, setRectangles] = useState([]);
+  const [circles, setCircles] = useState([]);
+
   const [lines, setLines] = useState([]);
+  const isDrawing = useRef(false);
+  const isDragging = useRef(false);
 
-  const normalizeRect = (rect) => {
-    const { x, y, width, height, ...rest } = rect;
-    const normX = width < 0 ? x + width : x;
-    const normY = height < 0 ? y + height : y;
-    const normW = Math.abs(width);
-    const normH = Math.abs(height);
-    return { x: normX, y: normY, width: normW, height: normH, ...rest };
-  };
-
-  useEffect(() => {
-    socket.on("draw-rect", (rect) => {
-      setRectangles((prev) => [...prev, rect]);
-    });
-    socket.on("draw-line", (line) => {
-      setLines((prev) => [...prev, line]);
-    });
-
-    socket.on("update-rect", (rects) => {
-      setRectangles(rects);
-    });
-    return () => {
-      socket.off("draw-rect");
-      socket.off("draw-line");
-      socket.off("update-rect");
-    };
-  }, []);
+  const [color, setColor] = useState("red");
+  const [stroke, setStroke] = useState(5);
 
   const handleMouseDown = (e) => {
-    const stage = e.target.getStage();
-    if (e.target !== stage) return;
-
-    const { x, y } = stage.getPointerPosition();
-
-    if (tool === "rect") {
-      const tempRect = {
-        x,
-        y,
-        width: 0,
-        height: 0,
-        id: Date.now().toString(),
-        fill: "red",
-        stroke: "green",
-      };
-      setNewRect(tempRect);
-      setIsDrawing(true);
-    } else if (tool === "pencil" || "eraser") {
-      const newLine = { id: Date.now().toString(), tool, points: [x, y] };
-      setLines((prev) => [...prev, newLine]);
-      socket.emit("draw-line", newLine);
-      setIsDrawing(true);
-    }
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+    setLines([...lines, { tool, points: [pos.x, pos.y] }]);
   };
 
   const handleMouseMove = (e) => {
-    if (!isDrawing) return;
-    const stage = e.target.getStage();
-    const { x, y } = stage.getPointerPosition();
-
-    if (tool === "rect" && newRect) {
-      setNewRect({ ...newRect, width: x - newRect.x, height: y - newRect.y });
-    } else if (tool === "pencil" || "eraser") {
-      setLines((prev) => {
-        const last = prev[prev.length - 1];
-        const updatedLine = { ...last, points: [...last.points, x, y] };
-        const newArr = [...prev.slice(0, -1), updatedLine];
-        socket.emit("draw-line", updatedLine);
-        return newArr;
-      });
+    if (
+      !isDrawing.current ||
+      isDragging.current ||
+      tool === "rect" ||
+      tool === "circle"
+    ) {
+      return;
     }
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = lines[lines.length - 1];
+
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+    lastLine.stroke = color;
+    lastLine.strokeWidth = stroke;
+    lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines.concat());
+
+    socket.emit("updateLines", lines);
   };
 
   const handleMouseUp = () => {
-    if (tool === "rect" && newRect) {
-      const finalized = normalizeRect(newRect);
-      setRectangles((prev) => [...prev, finalized]);
-      socket.emit("draw-rect", finalized);
-      setNewRect(null);
-    }
-    setIsDrawing(false);
+    isDrawing.current = false;
+  };
+
+  useEffect(() => {
+    socket.on("updateRectangles", (data) => {
+      setRectangles(data);
+    });
+
+    socket.on("updateCircles", (data) => {
+      setCircles(data);
+    });
+
+    socket.on("updateLines", (data) => {
+      setLines(data);
+    });
+
+    window.addEventListener("resize", () => {
+      const stage = document.querySelector(".konvajs-content");
+
+      stage.style.width = `${window.innerWidth}px`;
+      stage.style.height = `${window.innerHeight}px`;
+    });
+    return () => {
+      socket.off("updateRectangles");
+      socket.off("updateCircles");
+      socket.off("updateLines");
+    };
+  }, []);
+
+  const addRect = () => {
+    const data = {
+      x: Math.random() * 300,
+      y: Math.random() * 200,
+      width: 50,
+      height: 50,
+      fill: color,
+    };
+    setRectangles([...rectangles, data]);
+
+    socket.emit("updateRectangles", rectangles);
+  };
+
+  const addCircle = () => {
+    const data = {
+      x: Math.random() * 300,
+      y: Math.random() * 200,
+      radius: 25,
+      fill: color,
+    };
+    setCircles([...circles, data]);
+
+    socket.emit("updateCircles", circles);
+  };
+
+  const changeColor = (e) => {
+    const newColor = e.target.value;
+    setColor(newColor);
+  };
+
+  const changeStroke = (e) => {
+    const newColor = e.target.value;
+    setStroke(newColor);
   };
 
   return (
@@ -108,12 +125,12 @@ function Whiteboard() {
           onMouseUp={handleMouseUp}
         >
           <Layer>
-            {lines.map((line) => (
+            {lines.map((line, i) => (
               <Line
-                key={line.id}
+                key={i}
                 points={line.points}
-                stroke="#df4b26"
-                strokeWidth={5}
+                stroke={line.stroke || color}
+                strokeWidth={line.strokeWidth || stroke}
                 tension={0.5}
                 lineCap="round"
                 lineJoin="round"
@@ -122,26 +139,88 @@ function Whiteboard() {
                 }
               />
             ))}
-
-            {rectangles.map((rect) => (
+          </Layer>
+          <Layer>
+            {rectangles.map((rect, index) => (
               <Rect
-                key={rect.id}
-                {...rect}
+                key={index}
+                x={rect.x}
+                y={rect.y}
+                width={rect.width}
+                height={rect.height}
+                fill={rect.fill}
+                stroke="black"
+                strokeWidth={0}
                 draggable
-                onDragStart={() => setIsDrawing(true)}
+                onDblClick={() => {
+                  const newRectangles = rectangles.slice();
+                  newRectangles[index] = {};
+
+                  setRectangles(newRectangles);
+                  socket.emit("updateRectangles", newRectangles);
+                }}
+                onDragStart={() => {
+                  isDrawing.current = false;
+                  isDragging.current = true;
+                }}
+                onDragMove={(e) => {
+                  socket.emit("updateRectangles", rectangles);
+                }}
                 onDragEnd={(e) => {
-                  setIsDrawing(false);
-                  const updated = rectangles.map((r) =>
-                    r.id === rect.id
-                      ? { ...r, x: e.target.x(), y: e.target.y() }
-                      : r
-                  );
-                  setRectangles(updated);
-                  socket.emit("update-rect", updated);
+                  const newRectangles = rectangles.slice();
+                  newRectangles[index] = {
+                    ...newRectangles[index],
+                    x: e.target.x(),
+                    y: e.target.y(),
+                  };
+                  setRectangles(newRectangles);
+                  socket.emit("updateRectangles", newRectangles);
+
+                  isDragging.current = false;
                 }}
               />
             ))}
-            {newRect && <Rect {...normalizeRect(newRect)} />}
+          </Layer>
+
+          <Layer>
+            {circles.map((circle, index) => (
+              <Circle
+                key={index}
+                x={circle.x}
+                y={circle.y}
+                radius={circle.radius}
+                fill={circle.fill}
+                stroke="black"
+                strokeWidth={0}
+                draggable
+                onDblClick={() => {
+                  const newCircles = circles.slice();
+                  newCircles[index] = {};
+
+                  setCircles(newCircles);
+                  socket.emit("updateRectangles", newCircles);
+                }}
+                onDragStart={(e) => {
+                  isDragging.current = true;
+                  isDrawing.current = false;
+                }}
+                onDragMove={(e) => {
+                  socket.emit("updateCircles", circles);
+                }}
+                onDragEnd={(e) => {
+                  const newCircles = circles.slice();
+                  newCircles[index] = {
+                    ...newCircles[index],
+                    x: e.target.x(),
+                    y: e.target.y(),
+                  };
+                  setCircles(newCircles);
+                  socket.emit("updateCircles", newCircles);
+
+                  isDragging.current = false;
+                }}
+              />
+            ))}
           </Layer>
         </Stage>
       </div>
@@ -165,15 +244,27 @@ function Whiteboard() {
             className="tool-btn"
             onClick={() => {
               setTool("rect");
+              addRect();
             }}
           >
-            <svg
-              className="w-8 h-8 filter invert"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 512 512"
-            >
-              <path d="M315.4 15.5C309.7 5.9 299.2 0 288 0s-21.7 5.9-27.4 15.5l-96 160c-5.9 9.9-6.1 22.2-.4 32.2s16.3 16.2 27.8 16.2l192 0c11.5 0 22.2-6.2 27.8-16.2s5.5-22.3-.4-32.2l-96-160zM288 312l0 144c0 22.1 17.9 40 40 40l144 0c22.1 0 40-17.9 40-40l0-144c0-22.1-17.9-40-40-40l-144 0c-22.1 0-40 17.9-40 40zM128 512a128 128 0 1 0 0-256 128 128 0 1 0 0 256z" />
-            </svg>
+            <img
+              className="w-8 h-8 invert filter"
+              src="https://img.icons8.com/ios-filled/50/rectangle.png"
+              alt="rectangle"
+            />
+          </button>
+          <button
+            className="tool-btn"
+            onClick={() => {
+              setTool("circle");
+              addCircle();
+            }}
+          >
+            <img
+              className="w-8 h-8 invert filter"
+              src="https://img.icons8.com/forma-thin-filled/96/circled.png"
+              alt="rectangle"
+            />
           </button>
           <button
             className="tool-btn"
@@ -189,6 +280,19 @@ function Whiteboard() {
               <path d="M290.7 57.4L57.4 290.7c-25 25-25 65.5 0 90.5l80 80c12 12 28.3 18.7 45.3 18.7L288 480l9.4 0L512 480c17.7 0 32-14.3 32-32s-14.3-32-32-32l-124.1 0L518.6 285.3c25-25 25-65.5 0-90.5L381.3 57.4c-25-25-65.5-25-90.5 0zM297.4 416l-9.4 0-105.4 0-80-80L227.3 211.3 364.7 348.7 297.4 416z" />
             </svg>
           </button>
+          <input
+            type="color"
+            className="tool-btn"
+            onChange={changeColor}
+            value={color ?? "red"}
+          />
+
+          <input
+            type="number"
+            className="tool-btn"
+            onChange={changeStroke}
+            value={stroke ?? 5}
+          />
         </div>
       </div>
     </div>
