@@ -285,16 +285,17 @@ function Whiteboard() {
   }, []);
 
   return (
-    <div className="w-screen h-screen relative">
+    <div className="w-screen h-screen relative overflow-hidden">
       <Stage
         ref={stageRef}
         width={window.innerWidth}
         height={window.innerHeight}
-        className="bg-amber-50 fixed top-0 left-0"
+        className="bg-amber-50 fixed top-0 left-0 z-0"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
+        {/* All layers untouched */}
         <Layer>
           {lines.map((l, i) => (
             <Line
@@ -370,7 +371,8 @@ function Whiteboard() {
           ))}
         </Layer>
       </Stage>
-      <div className="flex justify-items-center absolute top-150 left-1/2 transform -translate-x-1/2 bg-amber-200 p-4 rounded-full space-x-2 z-10">
+
+      <div className="flex flex-wrap justify-center items-center absolute top-152 left-1/2 transform -translate-x-1/2 bg-amber-200 p-4 rounded-full gap-2 z-10 max-w-full">
         <div className="relative group">
           <button
             onClick={() => setTool("pencil")}
@@ -379,13 +381,12 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/481/481874.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Pencil
           </span>
         </div>
-
         <div className="relative group">
           <button
             onClick={() => {
@@ -397,13 +398,12 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/3303/3303076.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Rectangle
           </span>
         </div>
-
         <div className="relative group">
           <button
             onClick={() => {
@@ -415,13 +415,12 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/686/686700.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Circle
           </span>
         </div>
-
         <div className="relative group">
           <button
             onClick={() => setTool("eraser")}
@@ -430,19 +429,18 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/4043/4043845.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Eraser
           </span>
         </div>
-
         <div className="relative group">
           <label className="cursor-pointer flex items-center gap-1 tool-btn size-16 p-3.5">
             <img
               src="https://cdn-icons-png.flaticon.com/128/2206/2206009.png"
               className="invert"
-            ></img>
+            />
             <input
               type="color"
               onChange={(e) => setColor(e.target.value)}
@@ -465,7 +463,6 @@ function Whiteboard() {
             Stroke Width
           </span>
         </div>
-
         <div className="relative group">
           <button
             className="tool-btn cursor-pointer size-16 p-3.5"
@@ -475,13 +472,14 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/9693/9693669.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Undo
           </span>
         </div>
 
+        {/* Redo */}
         <div className="relative group">
           <button
             onClick={handleRedo}
@@ -491,44 +489,56 @@ function Whiteboard() {
             <img
               src="https://cdn-icons-png.flaticon.com/128/2990/2990009.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded">
             Redo
           </span>
         </div>
       </div>
-      <div className="flex justify-items-center absolute top-1/25 left-310 transform -translate-x-1/2 bg-amber-200 p-4 rounded-full space-x-2 z-10">
+      <div className="flex flex-wrap justify-items-center absolute top-5 left-1/2 transform -translate-x-1/2 bg-amber-200 p-4 rounded-full space-x-2 z-10 max-w-full">
         <div className="relative group">
           <button
             onClick={saveDocument}
-            className="tool-btn cursor-pointer size-14 p-3.5"
+            className="tool-btn cursor-pointer size-12 p-3"
           >
             <img
               src="https://cdn-icons-png.flaticon.com/128/15478/15478804.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-1 py-1 rounded">
             Export as JSON
           </span>
         </div>
 
-        <input
-          type="file"
-          accept=".json"
-          onChange={loadDocument}
-          className="tool-btn"
-        />
+        <div className="relative group">
+          <label className="tool-btn cursor-pointer rounded-full w-12 h-12 flex items-center justify-center">
+            <img
+              src="https://cdn-icons-png.flaticon.com/128/4013/4013427.png"
+              className="invert"
+            ></img>
+            <input
+              type="file"
+              accept=".json"
+              onChange={loadDocument}
+              className="hidden"
+            />
+          </label>
+          <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-1 py-1 rounded">
+            Import JSON
+          </span>
+        </div>
+
         <div className="relative group">
           <button
             onClick={exportAsImage}
-            className="tool-btn cursor-pointer size-14 p-3.5"
+            className="tool-btn cursor-pointer size-12 p-3"
           >
             <img
               src="https://cdn-icons-png.flaticon.com/128/739/739249.png"
               className="invert"
-            ></img>
+            />
           </button>
           <span className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs px-1 py-1 rounded">
             Export as Image
@@ -537,7 +547,7 @@ function Whiteboard() {
       </div>
       <button
         onClick={clearCanvas}
-        className="absolute top-1/25 left-1/20 transform -translate-x-1/2 tool-btn cursor-pointer"
+        className="absolute top-36 sm:top-28 left-1/2 transform -translate-x-1/2 tool-btn cursor-pointer"
       >
         Clear Canvas
       </button>
