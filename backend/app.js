@@ -72,22 +72,28 @@ app.get('/whiteboard', (req, res) => {
     }
 })
 
-io.on('connection', (socket) => {
-    console.log('User connected');
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
+io.on("connection", (socket) => {
+    console.log("User connected");
+
+    socket.on("joinSession", (sessionId) => {
+        socket.join(sessionId);
+        console.log(`User joined session: ${sessionId}`);
     });
 
-    socket.on('updateRectangles', (data) => {
-        socket.broadcast.emit('updateRectangles', data);
+    socket.on("updateLines", ({ sessionId, data }) => {
+        socket.to(sessionId).emit("updateLines", data);
     });
 
-    socket.on('updateCircles', (data) => {
-        socket.broadcast.emit('updateCircles', data);
+    socket.on("updateRectangles", ({ sessionId, data }) => {
+        socket.to(sessionId).emit("updateRectangles", data);
     });
 
-    socket.on('updateLines', (data) => {
-        socket.broadcast.emit('updateLines', data);
+    socket.on("updateCircles", ({ sessionId, data }) => {
+        socket.to(sessionId).emit("updateCircles", data);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
     });
 });
 

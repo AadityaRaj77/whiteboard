@@ -28,7 +28,7 @@ function Home() {
   return (
     <div className="body h-screen">
       <div className="flex justify-center">
-        <span className="text-4xl text-blue-400 mt-15">
+        <span className="text-4xl text-blue-400 mt-15 text-center">
           Collaborative Whiteboard
         </span>
       </div>
