@@ -16,7 +16,7 @@ Link - [https://drive.google.com/file/d/1JOSIu5YsC2WClFWGh5qq5tOAmaDC0MzL/view](
 
 ## Deployment
 
-Link - [https://drive.google.com/file/d/1JOSIu5YsC2WClFWGh5qq5tOAmaDC0MzL/view](https://drive.google.com/file/d/1JOSIu5YsC2WClFWGh5qq5tOAmaDC0MzL/view)
+Link - [https://whiteboard-neon.vercel.app](https://whiteboard-neon.vercel.app/)
 
 ## Technologies used
 
