@@ -17,6 +17,7 @@ Link - [https://drive.google.com/file/d/1JOSIu5YsC2WClFWGh5qq5tOAmaDC0MzL/view](
 ## Deployment
 
 Link - [https://whiteboard-neon.vercel.app](https://whiteboard-neon.vercel.app/)
+Note: The backend is deployed on render (free), therefore, it may take atleast 50s for it to wake up.
 
 ## Technologies used
 
