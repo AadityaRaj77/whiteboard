@@ -5,10 +5,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api.js";
 
-fetch("http://localhost:3001/api/room");
-fetch(`${API}/api/room`);
-
-const socket = io("http://localhost:3001");
+const socket = io("https://whiteboard-xes0.onrender.com");
 
 function Whiteboard() {
   const [searchParams, setSearchParams] = useSearchParams();
