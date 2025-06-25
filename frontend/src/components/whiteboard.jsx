@@ -3,7 +3,7 @@ import { Stage, Layer, Rect, Circle, Line } from "react-konva";
 import { io } from "socket.io-client";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import API from "./api.js";
+import API from "../api.js";
 
 fetch("http://localhost:3001/api/room");
 fetch(`${API}/api/room`);
