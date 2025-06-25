@@ -1,6 +1,6 @@
 // import './App.css'
-import Home from "@/components/home.jsx";
-import Whiteboard from "@/components/whiteboard.jsx";
+import Home from "@/home.jsx";
+import Whiteboard from "@/whiteboard.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import API from "./api.js";
 

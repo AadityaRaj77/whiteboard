@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import "../App.css";
-import API from "../api.js";
+import "./App.css";
+import API from "./api.js";
 
 fetch("http://localhost:3001/api/room");
 fetch(`${API}/api/room`);
