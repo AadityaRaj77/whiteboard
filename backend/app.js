@@ -17,13 +17,13 @@ const PORT = 3001
 
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: 'https://whiteboard-ctzc.vercel.app',
         credentials: true
     }
 })
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://whiteboard-ctzc.vercel.app',
     credentials: true
 }))
 app.use(express.json())
