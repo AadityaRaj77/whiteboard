@@ -4,7 +4,9 @@ import { io } from "socket.io-client";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
-const socket = io("https://whiteboard-xes0.onrender.com");
+import { BACKEND_URL } from "../api";
+
+const socket = io(BACKEND_URL);
 
 function Whiteboard() {
   const [searchParams, setSearchParams] = useSearchParams();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import "../App.css";
 
-const URL = "https://whiteboard-xes0.onrender.com";
+import { BACKEND_URL } from "../api";
 
 function Home() {
   const [loginForm, setLoginForm] = useState({});
@@ -13,7 +13,7 @@ function Home() {
   };
 
   const submitForm = async () => {
-    const promise = await fetch(URL, {
+    const promise = await fetch(BACKEND_URL + "/login", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
