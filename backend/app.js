@@ -11,6 +11,7 @@ import { createServer } from 'node:http'
 
 configDotenv()
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 const app = express()
 const server = createServer(app)
 const PORT = 3001
