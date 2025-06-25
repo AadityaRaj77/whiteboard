@@ -21,3 +21,29 @@ Link - [https://whiteboard-neon.vercel.app](https://whiteboard-neon.vercel.app/)
 ## Technologies used
 
 Link - ReactJS, KonvaJS, NodeJS, ExpressJS, MongoDB, Socket.io, Vercel, Render.
+
+## Running the Project Locally
+
+- Clone the github repository
+
+  ```bash
+  git clone https://github.com/AadityaRaj77/whiteboard.git
+  ```
+
+- Enter the project folder:
+
+  ```bash
+  cd whiteboard
+  ```
+
+- Head over to `backend\` and `frontend\`, and run `npm install` to install the required packages.
+
+- Create `.env` file in `backend\` and add your local mongodb uri, with whiteboard as database, to it:
+
+  ```env
+  DB_URI=mongodb://localhost:27017/whiteboard
+  ```
+
+- Head over to `frontend\src\api.js` and replace `BACKEND_URL` with `http://localhost:3001`
+
+- Now, Run the frontend and backend with `npm run dev` & `node app.js` respectively.
