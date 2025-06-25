@@ -3,7 +3,6 @@ import { Stage, Layer, Rect, Circle, Line } from "react-konva";
 import { io } from "socket.io-client";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api.js";
 
 const socket = io("https://whiteboard-xes0.onrender.com");
 

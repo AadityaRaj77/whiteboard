@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import "../App.css";
-import API from "../api.js";
+
+const URL = "https://whiteboard-xes0.onrender.com";
 
 function Home() {
   const [loginForm, setLoginForm] = useState({});
@@ -12,7 +13,7 @@ function Home() {
   };
 
   const submitForm = async () => {
-    const promise = await fetch("http://localhost:3001/login", {
+    const promise = await fetch(URL, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

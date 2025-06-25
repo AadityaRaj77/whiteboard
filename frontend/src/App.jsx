@@ -1,8 +1,7 @@
 // import './App.css'
-import Home from "@/home.jsx";
-import Whiteboard from "@/whiteboard.jsx";
+import Home from "./components/Home";
+import Whiteboard from "./components/Whiteboard";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import API from "./api.js";
 
 function App() {
   const router = createBrowserRouter([
