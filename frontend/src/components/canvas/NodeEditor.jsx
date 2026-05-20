@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useEditingStore } from "../../store/useEditingStore";
 
@@ -22,11 +22,23 @@ const NodeEditor = () => {
   if (!editingNode) return null;
 
   const save = async () => {
-    updateNode(editingNode._id, { text });
+    try {
+      updateNode(
+        editingNode._id,
 
-    await api.put(`/node/${editingNode._id}`, { text });
+        { text },
+      );
 
-    clearEditingNode();
+      await api.put(
+        `/node/${editingNode._id}`,
+
+        { text },
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      clearEditingNode();
+    }
   };
 
   return (
@@ -41,24 +53,40 @@ const NodeEditor = () => {
 
           save();
         }
+
+        if (e.key === "Escape") {
+          clearEditingNode();
+        }
       }}
       className="
-                absolute
-                z-[9999]
-                bg-red-500
-                border
-                border-violet-500
-                rounded-2xl
-                p-4
-                text-white
-                outline-none
-                resize-none
-                shadow-2xl
-            "
+        absolute
+
+        z-[9999]
+
+        bg-zinc-900
+
+        border
+        border-violet-500
+
+        rounded-2xl
+
+        p-4
+
+        text-white
+
+        outline-none
+
+        resize-none
+
+        shadow-2xl
+      "
       style={{
-        left: editingNode.position.x + 80,
+        left: editingNode.position.x,
+
         top: editingNode.position.y,
+
         width: 240,
+
         height: 110,
       }}
     />

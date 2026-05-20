@@ -9,29 +9,28 @@ const AddNodeButton = () => {
     <button
       onClick={() => setCreatingNode(!creatingNode)}
       className={`
-                absolute
-                bottom-6
-                right-[410px]
-                z-50
+        absolute
 
-                w-14
-                h-14
+        bottom-6
+        right-[420px]
 
-                rounded-2xl
+        z-50
 
-                flex
-                items-center
-                justify-center
+        w-14
+        h-14
 
-                shadow-2xl
-                transition
+        rounded-2xl
 
-                ${
-                  creatingNode
-                    ? "bg-violet-500"
-                    : "bg-zinc-800 hover:bg-zinc-700"
-                }
-            `}
+        flex
+        items-center
+        justify-center
+
+        shadow-2xl
+
+        transition
+
+        ${creatingNode ? "bg-violet-500" : "bg-zinc-800 hover:bg-zinc-700"}
+      `}
     >
       <Plus size={24} />
     </button>
