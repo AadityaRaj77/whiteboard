@@ -29,7 +29,8 @@ export async function callLLM(prompt) {
                 headers: {
                     "Authorization": `Bearer ${API_KEY}`,
                     "Content-Type": "application/json"
-                }
+                },
+                timeout: 30000
             }
         );
 
