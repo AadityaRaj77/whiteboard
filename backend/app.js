@@ -1,102 +1,27 @@
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
-import { configDotenv } from 'dotenv';
-import { User } from './models/User.js'
-import bcrypt from 'bcrypt'
 import cookieParser from 'cookie-parser';
+import nodeRoutes from './routes/node.routes.js';
 
-import { Server } from 'socket.io';
-import { createServer } from 'node:http'
+import './config/db.js';
 
-configDotenv()
+import authRoutes from './routes/auth.routes.js';
+import boardRoutes from './routes/board.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 
-const app = express()
-const server = createServer(app)
-const PORT = 3001
-
-const io = new Server(server, {
-    cors: {
-        origin: ['https://whiteboard-neon.vercel.app', 'http://localhost:5173'],
-        credentials: true
-    }
-})
+const app = express();
 
 app.use(cors({
-    origin: ['https://whiteboard-neon.vercel.app', 'http://localhost:5173'],
+    origin: ['http://localhost:5173'],
     credentials: true
-}))
-app.use(express.json())
-app.use(cookieParser())
+}));
 
-async function connectToDB() {
-    try {
-        await mongoose.connect(process.env.DB_URI);
-        console.log("Mongoose connected");
-    } catch (err) {
-        console.error("Connection error:", err);
-    }
-}
+app.use(express.json());
+app.use(cookieParser());
 
-connectToDB();
+app.use('/auth', authRoutes);
+app.use('/board', boardRoutes);
+app.use('/ai', aiRoutes);
+app.use('/node', nodeRoutes);
 
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body
-    const existingUser = await User.findOne({ username })
-
-    if (existingUser) {
-        const isMatch = await bcrypt.compare(password, existingUser.password)
-        if (isMatch) {
-            res.cookie('user', username, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
-            res.json({ success: true, type: 'login' })
-        } else {
-            res.json({ success: false, type: 'login' })
-        }
-    } else {
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = new User({ username: username, password: hashedPassword })
-        await newUser.save()
-
-        res.cookie('user', username, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
-        res.json({ success: true, type: 'register' })
-    }
-})
-
-app.get('/whiteboard', (req, res) => {
-    const user = req.cookies.user;
-    // console.log(req.)
-    if (!user) {
-        return res.json({ success: false })
-    } else {
-        res.json({ success: true, user })
-    }
-})
-
-io.on("connection", (socket) => {
-    console.log("User connected");
-
-    socket.on("joinSession", (sessionId) => {
-        socket.join(sessionId);
-        console.log(`User joined session: ${sessionId}`);
-    });
-
-    socket.on("updateLines", ({ sessionId, data }) => {
-        socket.to(sessionId).emit("updateLines", data);
-    });
-
-    socket.on("updateRectangles", ({ sessionId, data }) => {
-        socket.to(sessionId).emit("updateRectangles", data);
-    });
-
-    socket.on("updateCircles", ({ sessionId, data }) => {
-        socket.to(sessionId).emit("updateCircles", data);
-    });
-
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-    });
-});
-
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`)
-})
+export default app;
